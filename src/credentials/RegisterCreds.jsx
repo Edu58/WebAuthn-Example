@@ -21,7 +21,7 @@ const createCreds = async () => {
     const publicKey = {
         'challenge': enc.encode('JGSFUYDFGSIOHFOPSIJDF84Y39R4Y37RTHFJKSFNSIODF8SDBJhDSIUGV8S7DFVSDVS'),
         'rp': {
-            name: "Edwin's WebAuthn Demo",
+            'name': "Edwin's WebAuthn Demo",
 
         },
         'user': {
@@ -30,13 +30,15 @@ const createCreds = async () => {
             'displayName': "Edwin",
         },
         'authenticatorSelection': {
-            userVerification: "preferred",
+            'authenticatorAttachment': 'platform',
+            'userVerification': 'required',
+            'requireResidentKey': false
         },
-        'attestation': "direct",
+        'attestation': "none",
         'pubKeyCredParams': [
             { 'type': 'public-key', 'alg': -7 },
             { 'type': 'public-key', 'alg': -257 }
-        ],
+        ]
     }
 
     const res = await navigator.credentials.create({ publicKey })
@@ -57,10 +59,23 @@ const validateCreds = async () => {
         'challenge': enc.encode(AUTH_CHALLENGE), // atleast 16 bytes
         'allowCredentials': [{
             'id': strToBin(rawID),
+            'transports': ["nfc", "ble"],
             'type': 'public-key'
         }],
-        'authenticatorSelection': {
-            'userVerification': "preferred"
+        "timeout": 1800000,
+        "attestation": "none",
+        "excludeCredentials": [
+            {
+                "id": strToBin(rawID),
+                "type": "public-key",
+                "transports": [
+                    "internal"
+                ]
+            }
+        ],
+        "authenticatorSelection": {
+            "authenticatorAttachment": "platform",
+            "userVerification": "required"
         }
     }
     ////// END server generated info //////
